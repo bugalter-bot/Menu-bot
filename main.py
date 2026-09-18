@@ -3,11 +3,10 @@ import logging
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
-from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
-from aiohttp import web
-
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.types import ErrorEvent
+from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
+from aiohttp import web
 
 import config
 import database as db
@@ -28,6 +27,8 @@ dp.include_router(foods.router)
 dp.include_router(random_pick.router)
 dp.include_router(search.router)
 dp.include_router(backup.router)
+
+
 @dp.errors()
 async def error_handler(event: ErrorEvent):
     logging.exception("Update ishlov berishda xatolik: %s", event.exception)
@@ -61,6 +62,7 @@ async def on_startup(app: web.Application):
 
 async def on_shutdown(app: web.Application):
     await bot.delete_webhook()
+    await bot.session.close()
     await db.close_db()
 
 
