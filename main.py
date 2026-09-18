@@ -28,6 +28,21 @@ dp.include_router(foods.router)
 dp.include_router(random_pick.router)
 dp.include_router(search.router)
 dp.include_router(backup.router)
+@dp.errors()
+async def error_handler(event: ErrorEvent):
+    logging.exception("Update ishlov berishda xatolik: %s", event.exception)
+    update = event.update
+    if update.callback_query is not None:
+        try:
+            if isinstance(event.exception, TelegramBadRequest) and "message is not modified" in str(event.exception):
+                await update.callback_query.answer()
+            else:
+                await update.callback_query.answer(
+                    "⚠️ Xatolik yuz berdi, qayta urinib ko'ring.", show_alert=True
+                )
+        except Exception:
+            pass
+    return True
 
 
 async def health(request):
