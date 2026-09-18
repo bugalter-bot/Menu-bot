@@ -6,6 +6,9 @@ from aiogram.enums import ParseMode
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 from aiohttp import web
 
+from aiogram.exceptions import TelegramBadRequest
+from aiogram.types import ErrorEvent
+
 import config
 import database as db
 from handlers import backup, categories, common, foods, random_pick, search
