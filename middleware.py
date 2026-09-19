@@ -3,7 +3,7 @@ from typing import Any, Awaitable, Callable, Dict
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
 
-from config import ADMIN_ID
+from config import ADMIN_IDS
 
 
 class AdminOnlyMiddleware(BaseMiddleware):
@@ -16,6 +16,6 @@ class AdminOnlyMiddleware(BaseMiddleware):
         data: Dict[str, Any],
     ) -> Any:
         user = data.get("event_from_user")
-        if user and ADMIN_ID and user.id != ADMIN_ID:
+        if user and ADMIN_IDS and user.id not in ADMIN_IDS:
             return
         return await handler(event, data)
