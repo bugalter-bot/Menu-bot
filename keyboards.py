@@ -86,3 +86,12 @@ def all_foods_kb(foods) -> InlineKeyboardMarkup:
     b.button(text="⬅️ Bosh menu", callback_data="back_main")
     b.adjust(1)
     return b.as_markup()
+
+def backup_scope_kb(categories) -> InlineKeyboardMarkup:
+    b = InlineKeyboardBuilder()
+    b.button(text="📊 Hammasi", callback_data="backup_export:all")
+    for c in categories:
+        b.button(text=c["name"], callback_data=f"backup_export:{c['id']}")
+    b.button(text="⬅️ Bosh menu", callback_data="back_main")
+    b.adjust(1)
+    return b.as_markup()
