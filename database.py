@@ -1,4 +1,4 @@
-import json
+
 import asyncpg
 from config import DATABASE_URL
 
@@ -125,12 +125,21 @@ async def get_random_food(category_id: int | None = None):
         return await conn.fetchrow("SELECT * FROM foods ORDER BY random() LIMIT 1")
 
 
-# ---------- backup ----------
+# ---------- backup (Excel uchun) ----------
 
-async def export_all():
+async def get_export_data(category_id: int | None = None):
+    """Excel backup uchun (bo'lim, taom nomi, retsept) qatorlarini qaytaradi."""
     async with pool.acquire() as conn:
-        rows = await conn.fetch(
-            """SELECT f.id, f.name, f.recipe, f.image_file_id, c.name AS category
+        if category_id:
+            return await conn.fetch(
+                """SELECT c.name AS category, f.name, f.recipe
+                   FROM foods f JOIN categories c ON c.id = f.category_id
+                   WHERE f.category_id = $1
+                   ORDER BY f.name""",
+                category_id,
+            )
+        return await conn.fetch(
+            """SELECT c.name AS category, f.name, f.recipe
                FROM foods f JOIN categories c ON c.id = f.category_id
                ORDER BY c.name, f.name"""
         )
