@@ -68,6 +68,7 @@ async def on_shutdown(app: web.Application):
 
 def main():
     app = web.Application()
+    app.router.add_get("/", health)
     app.router.add_get("/health", health)
 
     SimpleRequestHandler(dispatcher=dp, bot=bot).register(app, path=config.WEBHOOK_PATH)
