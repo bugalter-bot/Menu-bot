@@ -2,6 +2,7 @@ from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from utils import render
 
 import database as db
 import keyboards as kb
@@ -30,7 +31,7 @@ async def show_all_foods(call: CallbackQuery):
     if not foods:
         await call.answer("Hali taom yo'q.", show_alert=True)
         return
-    await call.message.edit_text(f"📋 Hammasi ({len(foods)} ta):", reply_markup=kb.all_foods_kb(foods))
+    await render(call, f"📋 Hammasi ({len(foods)} ta):", kb.all_foods_kb(foods))
     await call.answer()
 
 
