@@ -5,6 +5,7 @@ from aiogram.types import CallbackQuery, Message
 import database as db
 import keyboards as kb
 from states import AddCategory
+from utils import render
 
 router = Router()
 
@@ -12,7 +13,7 @@ router = Router()
 @router.callback_query(F.data == "show_categories")
 async def show_categories(call: CallbackQuery):
     cats = await db.get_categories()
-    await call.message.edit_text("📂 Bo'limlar:", reply_markup=kb.categories_kb(cats))
+    await render(call, "📂 Bo'limlar:", kb.categories_kb(cats))
     await call.answer()
 
 
@@ -25,14 +26,14 @@ async def open_category(call: CallbackQuery):
         return
     foods = await db.get_foods_by_category(category_id)
     text = f"📂 {cat['name']}\n\nTaomlar soni: {len(foods)}"
-    await call.message.edit_text(text, reply_markup=kb.category_detail_kb(category_id, foods))
+    await render(call, text, kb.category_detail_kb(category_id, foods))
     await call.answer()
 
 
 @router.callback_query(F.data == "cat_add")
 async def cat_add_start(call: CallbackQuery, state: FSMContext):
     await state.set_state(AddCategory.waiting_name)
-    await call.message.edit_text("Yangi bo'lim nomini yozing:")
+    await render(call, "Yangi bo'lim nomini yozing:")
     await call.answer()
 
 
@@ -51,9 +52,10 @@ async def cat_add_finish(message: Message, state: FSMContext):
 @router.callback_query(F.data.startswith("cat_del:"))
 async def cat_del_confirm(call: CallbackQuery):
     category_id = int(call.data.split(":")[1])
-    await call.message.edit_text(
+    await render(
+        call,
         "Bo'limni o'chirsangiz, ichidagi barcha taomlar ham o'chib ketadi. Davom etamizmi?",
-        reply_markup=kb.confirm_kb(f"cat_del_yes:{category_id}", f"cat_del_no:{category_id}"),
+        kb.confirm_kb(f"cat_del_yes:{category_id}", f"cat_del_no:{category_id}"),
     )
     await call.answer()
 
@@ -63,7 +65,7 @@ async def cat_del_yes(call: CallbackQuery):
     category_id = int(call.data.split(":")[1])
     await db.delete_category(category_id)
     cats = await db.get_categories()
-    await call.message.edit_text("🗑 Bo'lim o'chirildi.", reply_markup=kb.categories_kb(cats))
+    await render(call, "🗑 Bo'lim o'chirildi.", kb.categories_kb(cats))
     await call.answer()
 
 
@@ -72,7 +74,5 @@ async def cat_del_no(call: CallbackQuery):
     category_id = int(call.data.split(":")[1])
     cat = await db.get_category(category_id)
     foods = await db.get_foods_by_category(category_id)
-    await call.message.edit_text(
-        f"📂 {cat['name']}", reply_markup=kb.category_detail_kb(category_id, foods)
-    )
+    await render(call, f"📂 {cat['name']}", kb.category_detail_kb(category_id, foods))
     await call.answer()
