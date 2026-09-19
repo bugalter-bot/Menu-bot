@@ -1,4 +1,3 @@
-cat > /home/claude/telegram-menu-bot/handlers/backup.py << 'PYEOF'
 import io
 
 from aiogram import F, Router
@@ -79,6 +78,3 @@ async def backup_export(call: CallbackQuery):
     file = BufferedInputFile(data, filename=filename)
     await call.message.answer_document(file, caption="📦 Excel fayl tayyor.")
     await call.answer()
-PYEOF
-python3 -c "import ast; ast.parse(open('/home/claude/telegram-menu-bot/handlers/backup.py').read()); print('OK')"
-cat /home/claude/telegram-menu-bot/handlers/backup.py
